@@ -27,19 +27,39 @@ Based on [Modern Software Engineering](https://www.davefarley.net/?p=352) by Dav
 
 Modularity makes change local. A modular system is decomposed into units that can be understood, developed, tested, and changed independently — so a change in one place doesn't require understanding or modifying the rest.
 
+Farley defines modularity as: "the degree to which a system's components may be separated and recombined, often with the benefit of flexibility and variety in use."
+
+A modular system exhibits these characteristics:
+
+**Easy to understand and change**: Components are reusable, easily understood, and can be worked on, tested, and modified without requiring deep knowledge of the whole system. The system can grow and evolve naturally, with maintainability built in as a first-class concern.
+
+**Testable**: Tests have clear, measurable outcomes. Results are deterministic — the same inputs consistently produce the same outputs — and measurements are precise enough to be valuable and actionable.
+
+**Decoupled**: Components are stand-alone and independent. Separation of concerns ensures that a code change in one place does not cascade to others. Boundaries limit damage and side effects, keeping changes local.
+
+**Services**: Modules expose services — code that delivers behavior to other code while hiding the details of how that behavior is implemented. Services and their boundaries provide translation and validation points for information moving between modules.
+
+**Information hiding**: Access to internal details is limited. Clear, well-defined interfaces control access, manage communication, and specify inputs and outputs. Implementation details are abstracted and hidden.
+
+**Releasable**: The module stays in a releasable state as a default, ensuring that modularity translates to deployment independence.
+
 | Signal | Good | Poor |
 |--------|------|------|
-| **Boundary clarity** | Module has a clear public interface (service layer, API, exported functions) | Consumers reach into internal files, import private helpers |
-| **Independent testability** | Module's tests run without standing up unrelated parts of the system | Tests require fixtures/setup from many other modules |
-| **Size** | Module is small enough for one person to understand fully | Sprawling module with 50+ files spanning multiple concerns |
-| **Deployability** | Changing this module doesn't force changes elsewhere | Every change triggers a cascade of updates in other modules |
+| **Understandability and reusability** | Module is small and focused; can be understood by one developer; reusable in different contexts without modification | Module is large and sprawling; requires deep knowledge of the whole system; tightly coupled to specific use cases |
+| **Test clarity and determinism** | Tests have clear, measurable outcomes; same inputs consistently produce same outputs; test measurements are precise and actionable | Test outcomes are flaky or unpredictable; tests require complex setup and many fixtures; measurement value is unclear |
+| **Decoupling and isolation** | Components are stand-alone and independent; code change in one place doesn't cascade elsewhere; boundaries limit damage | Code change triggers cascading updates in other modules; changes are tightly coupled; boundaries are blurred |
+| **Service abstraction** | Module exposes well-defined services that hide implementation details; seams provide translation and validation points | Consumers reach into internal files; services leak implementation details; no clear translation boundary |
+| **Information hiding** | Clear, well-defined public interface; internal details are abstracted and inaccessible; limited, controlled access | All files/functions are public; internals leak into consumers; no clear abstraction layer |
+| **Releasable state** | Module can be released independently at any time; no pending broken dependencies or incomplete changes | Module has broken dependencies; incomplete work blocks release; coupling to other modules prevents independent release |
 
 **Investigation steps:**
-1. **Measure module size** — count files and lines of code in the target. Large modules are harder to reason about independently.
-2. **Check for a public interface** — does the module expose a service layer, API surface, or explicit set of exports? Or is everything implicitly public?
-3. **Map inbound dependencies** — search for imports of the target module from elsewhere in the codebase. High fan-in means many consumers are affected by changes here.
-4. **Map outbound dependencies** — search for imports from other modules within the target. High fan-out means changes elsewhere may force changes here.
-5. **Check test isolation** — do the module's tests import heavily from other modules for fixtures or setup? If so, the module cannot be tested independently.
+1. **Measure module size** — count files and lines of code in the target. Small modules are easier to understand independently. A focused module should be small enough for one developer to understand fully.
+2. **Verify reusability** — can this module be reused in other contexts, or is it tightly coupled to one specific use case? Look for hardcoded assumptions or implicit dependencies that reduce reusability.
+3. **Check the service layer and information hiding** — does the module expose a clear public interface (service layer, API surface, explicit exports) that hides implementation details? Or do consumers reach into internal files?
+4. **Verify test isolation and testability** — do the module's tests run in isolation without importing heavily from other modules for fixtures or setup? Deterministic test outcomes indicate good testability.
+5. **Map inbound dependencies (fan-in)** — count modules that depend on this one. High fan-in means many consumers are affected by changes, limiting independence.
+6. **Map outbound dependencies (fan-out)** — count modules this one depends on. High fan-out means many reasons to change and tight coupling to other parts of the system.
+7. **Check for circular dependencies** — do any modules importing from this module also get imported by it? Circular dependencies prevent independent change and deployment.
 
 ### 2. Cohesion — *Do things that change together live together?*
 
