@@ -63,20 +63,36 @@ A modular system exhibits these characteristics:
 
 ### 2. Cohesion — *Do things that change together live together?*
 
-Cohesion makes change predictable. When related code lives in the same module, a change for one reason affects one place. Low cohesion — a module doing many unrelated things — means a single business change scatters across files, and a single file changes for many unrelated reasons.
+Cohesion makes change predictable. The degree to which the elements inside a module belong together determines how focused and understandable that module is. When related code lives in the same module, a change for one reason affects one place. Low cohesion — a module doing many unrelated things — means a single business change scatters across files, and a single file changes for many unrelated reasons.
+
+Farley defines cohesion as: "the degree to which the elements inside a module belong together."
+
+As Kent Beck observed: "Pull the things that are unrelated further apart, and put the things that are related closer together."
+
+A cohesive system exhibits these characteristics:
+
+**Easy to understand and change**: Code is clear about what it does and how to change it safely. The primary goal is to communicate ideas to humans. Optimization reduces thinking rather than typing. When you can see what code does and trace related changes through the module together, the code is cohesive. Smaller, more easily understandable, and more testable pieces indicate good cohesion. The key measure is the extent, or cost, of change.
+
+**Related code is close together**: Cohesion is a measure of functional relatedness and relatedness of purpose. Code that randomly combines unrelated ideas is not cohesive. Related concepts that change together should live together. When a change to one part enables related parts to change together and add new value, the code is cohesive. Note: cohesive code tends to be more tightly coupled — this is the cost of cohesion.
+
+**Domain-driven design**: Thinking and design are guided by the problem domain. The module expresses a ubiquitous language with agreed, consistent meaning within its bounded context. Domain concepts organize the code, not technical layers.
+
+**Testable**: Behaviorally-focused tests apply pressure to the design, making code more cohesive. Tests that verify related behaviors together reinforce cohesion and signal where code belongs.
 
 | Signal | Good | Poor |
 |--------|------|------|
-| **Single responsibility** | All files/classes in the module serve the same domain concept | Module contains unrelated models, handlers, or utilities bundled together |
-| **Naming coherence** | File and class names cluster around one concept | Names span multiple unrelated domains in the same module |
-| **Change correlation** | Files in the module tend to change together for the same reason | Files change for completely different reasons/tickets |
-| **God files** | Files are focused (< 500 lines, single concern) | Files with 1000+ lines doing many things |
+| **Understandability and changeability** | Code is clear about what it does; related changes are localized; smaller, discrete pieces are easily testable; optimization reduces thinking | Code's purpose is unclear; changes scatter across the module; multiple unrelated reasons to modify; optimization focuses on typing rather than understanding |
+| **Functional relatedness** | All code in the module shares a common purpose; related concepts that change together live together; changes to one part enable related parts to grow | Module randomly combines unrelated ideas; code that changes for different reasons is bundled together; no clear functional purpose |
+| **Domain-driven design** | Module expresses a bounded context with ubiquitous language; consistent vocabulary and meaning; domain concepts guide structure | Module lacks domain focus; inconsistent vocabulary; concepts organized by technical layer rather than domain; mixed concerns |
+| **Testability** | Behaviorally-focused tests reinforce cohesive design; test suite applies pressure to keep related behaviors together | Tests are fragmented across multiple concerns; unrelated behaviors tested in one module; tests don't guide cohesive design |
 
 **Investigation steps:**
-1. **Find god files** — sort files by line count. Large files often bundle multiple responsibilities.
-2. **Check naming coherence** — list all class/type definitions in the module. Do they cluster around one concept, or span many?
-3. **Analyse change correlation** — use git history to see which files change together and how frequently. Files that always change in the same commit are likely cohesive; files that change for unrelated reasons suggest accidental grouping.
-4. **Look for mixed responsibilities** — check whether a single file contains classes that serve different concerns (e.g. data models, HTTP handlers, and utility functions in one file).
+1. **Assess understandability** — can a developer quickly explain what this module does and how changes flow through it? Large, scattered files signal poor cohesion.
+2. **Check functional relatedness** — do all classes/functions serve the same domain concept? List primary purposes — 3+ unrelated purposes indicate weak cohesion.
+3. **Check domain language** — does the module use consistent domain vocabulary? Look for mixed technical layers (models, handlers, utilities) in one module — that signals poor domain cohesion.
+4. **Analyse test alignment** — do tests verify related behaviors together, or are they fragmented? Fragmented tests often indicate behaviors don't belong together.
+5. **Find god files** — sort files by line count. Files over 500 lines often bundle unrelated responsibilities.
+6. **Analyse change correlation** — use git history to see which files change together. Files that always change in the same commit are likely cohesive; files that change for unrelated reasons belong in different modules.
 
 ### 3. Separation of Concerns — *Can we change one concern without disturbing others?*
 
