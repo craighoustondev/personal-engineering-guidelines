@@ -133,19 +133,46 @@ A system with well-separated concerns exhibits these characteristics:
 
 Information hiding makes change free. When a module exposes only what consumers need, its internals can be restructured, optimised, or rewritten without anyone noticing. When internals leak, every consumer becomes a constraint on change.
 
+Information hiding is fundamentally about **creating seams** in code — boundaries where we draw clear lines between internal implementation and external interface. From outside the seam, consumers should not need to know or care how the code works, only how to use it. This separation enables the internal implementation to evolve independently of the consumers.
+
+Abstraction is about **creating useful models** of complex reality. The aim is not perfection but models that help us reason about and solve problems. Effective abstractions:
+
+- Target the problem being solved, not an imagined future — overly abstract designs impose unwanted developmental and performance costs
+- Hide complexity in one part of the system from another, reducing cognitive load
+- Separate **essential complexity** (inherent to the problem) from **accidental complexity** (implementation details) — abstracting the interface between these as far as possible
+- Do not leak implementation details (architecture, storage, frameworks, error modes) into the public interface
+
+A system with good information hiding and abstraction exhibits these characteristics:
+
+**Hidden internals**: Consumers of a module should never be forced to know about its internal workings. The public interface is the only contract; the behaviour, implementation details, and internal data are hidden. This allows the module to change its internal representation, optimization strategies, or implementation techniques without affecting consumers.
+
+**Clear seams**: Well-defined boundaries separate the module's public API from internal helpers. These seams serve as translation and validation points where data enters or leaves the module. Changes that respect these seams remain local.
+
+**Domain-focused interface**: The public interface expresses concepts in the problem domain, not the solution domain. Consumers reason about business problems, not storage mechanisms, framework abstractions, or technical error modes. Technical details are isolated behind the seam.
+
+**Stable abstraction**: The public API remains stable as implementation changes. Abstractions fail when they leak technical details (HTTP errors leaking from a business service, NullPointerExceptions from domain code, database field names exposed in the public interface). These leaks force consumers to couple to implementation and defeat the purpose of abstraction.
+
+**Testability through abstraction**: Tests serve as mini-specifications for desired behaviour, written from a consumer's perspective. When tests express requirements simply and clearly, they apply pressure toward abstraction. A well-abstracted design is naturally testable — it's easy to specify desired behaviour without coupling to implementation.
+
+**Retention of choice**: Good abstraction and information hiding preserve the ability to change minds about implementation and design as the team learns more. The separation between interface and implementation means choices about technology, storage, optimization, or architecture can be deferred or revised without cascading changes throughout the codebase.
+
 | Signal                   | Good                                                                    | Poor                                                                                    |
 | ------------------------ | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **Service layer exists** | Consumers call well-defined service functions                           | Consumers directly manipulate data models or call internal helpers                      |
+| **Service layer exists** | Consumers call well-defined service functions or classes                | Consumers directly manipulate data models or call internal helpers                      |
 | **Private internals**    | Internal helpers are clearly marked private or live in internal modules | All functions/classes are public and imported freely                                    |
-| **Stable public API**    | Public interface signatures rarely change                               | Consumers depend on data model field names, internal methods, or implementation details |
-| **Abstraction level**    | Public interface speaks domain language                                 | Public interface leaks storage details, framework internals, or infrastructure          |
+| **Stable public API**    | Public interface signatures rarely change; implementation is abstracted | Consumers depend on data model field names, internal methods, or implementation details |
+| **Abstraction level**    | Public interface speaks domain language; hides storage, framework, tech | Public interface leaks storage details, framework internals, or infrastructure concerns |
+| **No information leaks** | Technical errors abstracted (business exceptions, not HTTP or null)     | Consumers handle technical details (NullPointerException, HTTP codes, DB constraints)   |
+| **Clear concerns**       | Public API isolates what consumers need from how it's delivered         | Consumers aware of and dependent on implementation choices and internal concerns        |
 
 **Investigation steps:**
 
-1. **Check if a service layer exists** — does the module expose a defined set of public functions or classes for external use?
-2. **Check how other modules consume this one** — search for imports from outside the module. Are they importing the public interface, or reaching into internal files?
-3. **Check for private member access across boundaries** — search for access to internal/private members from outside the module.
-4. **Check abstraction quality** — read the public interface. Does it speak domain language, or does it leak implementation details (database fields, framework types, internal data structures)?
+1. **Check if a service layer exists** — does the module expose a defined set of public functions or classes for external use? Or do all files feel equally "public"?
+2. **Check how other modules consume this one** — search for imports from outside the module. Are they importing the public interface, or reaching into internal files, helpers, or data structures?
+3. **Check for private member access across boundaries** — search for access to internal/private members, data model fields, or helper functions from outside the module.
+4. **Check information leaks in the public interface** — does the API leak technical details? Look for HTTP codes, database constraints, framework types, error types, or implementation specifics exposed in public signatures.
+5. **Assess abstraction stability** — has the public API changed recently? Each change suggests the abstraction is unstable or consumers are coupling to internals rather than the intended interface.
+6. **Check encapsulation of data** — are internal data structures exposed directly to consumers, or hidden behind service functions? Direct exposure allows consumers to depend on structure details.
 
 ### 5. Managing Coupling — _When something changes, how far does the ripple travel?_
 
