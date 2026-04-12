@@ -23,7 +23,7 @@ Based on [Modern Software Engineering](https://www.davefarley.net/?p=352) by Dav
 
 ## The Five Design Principles
 
-### 1. Modularity — *Can we change one part without understanding the whole?*
+### 1. Modularity — _Can we change one part without understanding the whole?_
 
 Modularity makes change local. A modular system is decomposed into units that can be understood, developed, tested, and changed independently — so a change in one place doesn't require understanding or modifying the rest.
 
@@ -43,16 +43,17 @@ A modular system exhibits these characteristics:
 
 **Releasable**: The module stays in a releasable state as a default, ensuring that modularity translates to deployment independence.
 
-| Signal | Good | Poor |
-|--------|------|------|
-| **Understandability and reusability** | Module is small and focused; can be understood by one developer; reusable in different contexts without modification | Module is large and sprawling; requires deep knowledge of the whole system; tightly coupled to specific use cases |
-| **Test clarity and determinism** | Tests have clear, measurable outcomes; same inputs consistently produce same outputs; test measurements are precise and actionable | Test outcomes are flaky or unpredictable; tests require complex setup and many fixtures; measurement value is unclear |
-| **Decoupling and isolation** | Components are stand-alone and independent; code change in one place doesn't cascade elsewhere; boundaries limit damage | Code change triggers cascading updates in other modules; changes are tightly coupled; boundaries are blurred |
-| **Service abstraction** | Module exposes well-defined services that hide implementation details; seams provide translation and validation points | Consumers reach into internal files; services leak implementation details; no clear translation boundary |
-| **Information hiding** | Clear, well-defined public interface; internal details are abstracted and inaccessible; limited, controlled access | All files/functions are public; internals leak into consumers; no clear abstraction layer |
-| **Releasable state** | Module can be released independently at any time; no pending broken dependencies or incomplete changes | Module has broken dependencies; incomplete work blocks release; coupling to other modules prevents independent release |
+| Signal                                | Good                                                                                                                               | Poor                                                                                                                   |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Understandability and reusability** | Module is small and focused; can be understood by one developer; reusable in different contexts without modification               | Module is large and sprawling; requires deep knowledge of the whole system; tightly coupled to specific use cases      |
+| **Test clarity and determinism**      | Tests have clear, measurable outcomes; same inputs consistently produce same outputs; test measurements are precise and actionable | Test outcomes are flaky or unpredictable; tests require complex setup and many fixtures; measurement value is unclear  |
+| **Decoupling and isolation**          | Components are stand-alone and independent; code change in one place doesn't cascade elsewhere; boundaries limit damage            | Code change triggers cascading updates in other modules; changes are tightly coupled; boundaries are blurred           |
+| **Service abstraction**               | Module exposes well-defined services that hide implementation details; seams provide translation and validation points             | Consumers reach into internal files; services leak implementation details; no clear translation boundary               |
+| **Information hiding**                | Clear, well-defined public interface; internal details are abstracted and inaccessible; limited, controlled access                 | All files/functions are public; internals leak into consumers; no clear abstraction layer                              |
+| **Releasable state**                  | Module can be released independently at any time; no pending broken dependencies or incomplete changes                             | Module has broken dependencies; incomplete work blocks release; coupling to other modules prevents independent release |
 
 **Investigation steps:**
+
 1. **Measure module size** — count files and lines of code in the target. Small modules are easier to understand independently. A focused module should be small enough for one developer to understand fully.
 2. **Verify reusability** — can this module be reused in other contexts, or is it tightly coupled to one specific use case? Look for hardcoded assumptions or implicit dependencies that reduce reusability.
 3. **Check the service layer and information hiding** — does the module expose a clear public interface (service layer, API surface, explicit exports) that hides implementation details? Or do consumers reach into internal files?
@@ -61,7 +62,7 @@ A modular system exhibits these characteristics:
 6. **Map outbound dependencies (fan-out)** — count modules this one depends on. High fan-out means many reasons to change and tight coupling to other parts of the system.
 7. **Check for circular dependencies** — do any modules importing from this module also get imported by it? Circular dependencies prevent independent change and deployment.
 
-### 2. Cohesion — *Do things that change together live together?*
+### 2. Cohesion — _Do things that change together live together?_
 
 Cohesion makes change predictable. The degree to which the elements inside a module belong together determines how focused and understandable that module is. When related code lives in the same module, a change for one reason affects one place. Low cohesion — a module doing many unrelated things — means a single business change scatters across files, and a single file changes for many unrelated reasons.
 
@@ -79,14 +80,15 @@ A cohesive system exhibits these characteristics:
 
 **Testable**: Behaviorally-focused tests apply pressure to the design, making code more cohesive. Tests that verify related behaviors together reinforce cohesion and signal where code belongs.
 
-| Signal | Good | Poor |
-|--------|------|------|
-| **Understandability and changeability** | Code is clear about what it does; related changes are localized; smaller, discrete pieces are easily testable; optimization reduces thinking | Code's purpose is unclear; changes scatter across the module; multiple unrelated reasons to modify; optimization focuses on typing rather than understanding |
-| **Functional relatedness** | All code in the module shares a common purpose; related concepts that change together live together; changes to one part enable related parts to grow | Module randomly combines unrelated ideas; code that changes for different reasons is bundled together; no clear functional purpose |
-| **Domain-driven design** | Module expresses a bounded context with ubiquitous language; consistent vocabulary and meaning; domain concepts guide structure | Module lacks domain focus; inconsistent vocabulary; concepts organized by technical layer rather than domain; mixed concerns |
-| **Testability** | Behaviorally-focused tests reinforce cohesive design; test suite applies pressure to keep related behaviors together | Tests are fragmented across multiple concerns; unrelated behaviors tested in one module; tests don't guide cohesive design |
+| Signal                                  | Good                                                                                                                                                  | Poor                                                                                                                                                         |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Understandability and changeability** | Code is clear about what it does; related changes are localized; smaller, discrete pieces are easily testable; optimization reduces thinking          | Code's purpose is unclear; changes scatter across the module; multiple unrelated reasons to modify; optimization focuses on typing rather than understanding |
+| **Functional relatedness**              | All code in the module shares a common purpose; related concepts that change together live together; changes to one part enable related parts to grow | Module randomly combines unrelated ideas; code that changes for different reasons is bundled together; no clear functional purpose                           |
+| **Domain-driven design**                | Module expresses a bounded context with ubiquitous language; consistent vocabulary and meaning; domain concepts guide structure                       | Module lacks domain focus; inconsistent vocabulary; concepts organized by technical layer rather than domain; mixed concerns                                 |
+| **Testability**                         | Behaviorally-focused tests reinforce cohesive design; test suite applies pressure to keep related behaviors together                                  | Tests are fragmented across multiple concerns; unrelated behaviors tested in one module; tests don't guide cohesive design                                   |
 
 **Investigation steps:**
+
 1. **Assess understandability** — can a developer quickly explain what this module does and how changes flow through it? Large, scattered files signal poor cohesion.
 2. **Check functional relatedness** — do all classes/functions serve the same domain concept? List primary purposes — 3+ unrelated purposes indicate weak cohesion.
 3. **Check domain language** — does the module use consistent domain vocabulary? Look for mixed technical layers (models, handlers, utilities) in one module — that signals poor domain cohesion.
@@ -94,53 +96,70 @@ A cohesive system exhibits these characteristics:
 5. **Find god files** — sort files by line count. Files over 500 lines often bundle unrelated responsibilities.
 6. **Analyse change correlation** — use git history to see which files change together. Files that always change in the same commit are likely cohesive; files that change for unrelated reasons belong in different modules.
 
-### 3. Separation of Concerns — *Can we change one concern without disturbing others?*
+### 3. Separation of Concerns — _Can we change one concern without disturbing others?_
 
-Separation of concerns makes change safe. When domain logic, data access, presentation, and infrastructure live in their own layers, a change to how data is stored doesn't force changes to how it's presented, and a change to business rules doesn't require touching the request-handling layer.
+Separation of concerns is a design principle for separating a program into distinct sections such that each section addresses a separate concern. Separation of concerns makes change safe. When domain logic, data access, presentation, and infrastructure live in their own focused areas, a change to how data is stored doesn't force changes to how it's presented, and changes to business rules don't require touching infrastructure or request-handling layers.
 
-| Concern | Belongs in | Red flag if found in |
-|---------|-----------|---------------------|
-| **Business logic** | Services, domain models, use cases | Request handlers, DTOs/serializers, templates, background jobs |
-| **Data access** | Repositories, data models, query builders | Request handlers, services (raw queries scattered), DTOs |
-| **Request handling** | Controllers, handlers, middleware | Domain models, services, business logic |
-| **Presentation/formatting** | DTOs, serializers, templates, frontend | Domain models, services |
-| **Infrastructure** | Configuration, middleware, base classes | Domain logic, request handlers |
+A system with well-separated concerns exhibits these characteristics:
+
+**Small and focused**: Each module, class, and function does one thing. Unrelated code stays far apart; related code stays close. Clarity and focus are maintained by keeping scope small, code readable, and behavior easy to understand without deep knowledge of surrounding systems. The problem being solved defines the boundaries — using the problem domain to draw sensible lines of demarcation is the essence of separation of concerns. When a module, class, or function does more than one thing, concerns aren't truly separate.
+
+**Essential and accidental complexity separated**: Essential complexity is inherent to the problem being solved (calculating a bank account total, adding an item to a cart). Accidental complexity is the unavoidable side-effect of implementation (data persistence, UI rendering, security, scalability). Core business logic should know nothing about its surroundings — no remote calls, no data recording, no security or resilience concerns. These services are provided elsewhere. Domain-focused core behavior that is kept separate becomes secure, persistent, available, scalable, resilient, and performant by default.
+
+**Dependency injection**: Dependencies are supplied as parameters rather than created internally. This technique minimizes coupling to an appropriate level and forms a clear line of demarcation between concerns. It enables core logic to remain independent of how dependencies are fulfilled.
+
+**Ports and Adapters**: Services maintain clear boundaries using the Ports & Adapters pattern. Code only depends on the minimal subset of an external API that matters. Each service has its own view of the world; adapters translate information flowing in at service boundaries. Input validation and translation occur at these seams. When code communicates with different scopes (different repos, different deployment pipelines, external services), always use ports and adapters.
+
+**Testable**: Separating concerns makes testing easier. Tests become clearer and less brittle when each test exercises one concern rather than multiple conflated concerns. Focusing on testability can drive better separation of concerns throughout the design.
+
+| Signal                                  | Good                                                                                                                                      | Poor                                                                                                                               |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Small and focused responsibilities**  | Each module/class/function does one thing clearly; complexity is low; boundaries align with the problem domain                            | Module mixes unrelated responsibilities; purpose is unclear; complexity is high; boundaries don't reflect the domain               |
+| **Essential vs. accidental complexity** | Core logic is isolated and independent; infrastructure, persistence, and resilience concerns are elsewhere; seams are clear at boundaries | Business logic is tangled with database calls, HTTP details, framework code, or infrastructure concerns; dependencies are implicit |
+| **Dependency injection**                | Dependencies are supplied as parameters; no hidden creation logic; easy to swap implementations and test in isolation                     | Objects create their own dependencies; tight coupling to concrete implementations; difficult to test or change dependencies        |
+| **Ports and Adapters**                  | Clear translation layers at service boundaries; interfaces expose only what matters; validation and transformation happen at seams        | Direct coupling to external APIs; internal code depends on external details; no translation or validation at boundaries            |
+| **Testability**                         | Tests exercise one concern in isolation; related behaviors tested together; no cascading setup or complex fixtures                        | Tests require setup across multiple concerns; fixtures are complex and brittle; test failures don't clearly indicate what broke    |
 
 **Investigation steps:**
-1. **Check for business logic in request handlers** — search for data-access queries, complex conditionals, or business calculations in controller/handler/view files. These should delegate to a service or domain layer.
-2. **Check for request/HTTP concepts leaking into domain logic** — search for request objects, HTTP status codes, or response types in service or model files.
-3. **Check for fat background jobs** — background tasks/jobs should be thin orchestrators that delegate to services. If they contain substantial logic, that logic is hard to test and reuse.
-4. **Check for data access outside the data layer** — search for raw queries or ORM calls scattered in handlers, services, or other non-data-layer files.
 
-### 4. Information Hiding & Abstraction — *Can we change internals without breaking consumers?*
+1. **Identify what each module does** — can you state the primary responsibility in one sentence? Multiple unrelated purposes indicate mixed concerns.
+2. **Check for business logic in infrastructure layers** — search for domain calculations, conditional logic, or business rules in request handlers, data access, UI, or background jobs. These should be in a focused domain/service layer.
+3. **Check for infrastructure in business logic** — search for database calls, HTTP details, or external API dependencies in domain models and core services. These concerns should be injected.
+4. **Trace dependency flow** — does core logic depend on infrastructure, or does infrastructure depend on core logic? Core should be independent; infrastructure should adapt to it.
+5. **Evaluate boundaries** — are translation/validation layers (adapters) present where services meet external concerns? Or does code directly couple to external details?
+6. **Assess test isolation** — can you test each concern independently, or do tests require complex multi-concern setup? Poor separation forces complex test fixtures.
+
+### 4. Information Hiding & Abstraction — _Can we change internals without breaking consumers?_
 
 Information hiding makes change free. When a module exposes only what consumers need, its internals can be restructured, optimised, or rewritten without anyone noticing. When internals leak, every consumer becomes a constraint on change.
 
-| Signal | Good | Poor |
-|--------|------|------|
-| **Service layer exists** | Consumers call well-defined service functions | Consumers directly manipulate data models or call internal helpers |
-| **Private internals** | Internal helpers are clearly marked private or live in internal modules | All functions/classes are public and imported freely |
-| **Stable public API** | Public interface signatures rarely change | Consumers depend on data model field names, internal methods, or implementation details |
-| **Abstraction level** | Public interface speaks domain language | Public interface leaks storage details, framework internals, or infrastructure |
+| Signal                   | Good                                                                    | Poor                                                                                    |
+| ------------------------ | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **Service layer exists** | Consumers call well-defined service functions                           | Consumers directly manipulate data models or call internal helpers                      |
+| **Private internals**    | Internal helpers are clearly marked private or live in internal modules | All functions/classes are public and imported freely                                    |
+| **Stable public API**    | Public interface signatures rarely change                               | Consumers depend on data model field names, internal methods, or implementation details |
+| **Abstraction level**    | Public interface speaks domain language                                 | Public interface leaks storage details, framework internals, or infrastructure          |
 
 **Investigation steps:**
+
 1. **Check if a service layer exists** — does the module expose a defined set of public functions or classes for external use?
 2. **Check how other modules consume this one** — search for imports from outside the module. Are they importing the public interface, or reaching into internal files?
 3. **Check for private member access across boundaries** — search for access to internal/private members from outside the module.
 4. **Check abstraction quality** — read the public interface. Does it speak domain language, or does it leak implementation details (database fields, framework types, internal data structures)?
 
-### 5. Managing Coupling — *When something changes, how far does the ripple travel?*
+### 5. Managing Coupling — _When something changes, how far does the ripple travel?_
 
-Coupling determines the blast radius of change. The goal is not zero coupling but *managed* coupling — keeping the cost of change proportional to the value of the connection, so that a change in one module doesn't cascade unpredictably through others.
+Coupling determines the blast radius of change. The goal is not zero coupling but _managed_ coupling — keeping the cost of change proportional to the value of the connection, so that a change in one module doesn't cascade unpredictably through others.
 
-| Signal | Good | Poor |
-|--------|------|------|
-| **Dependency direction** | Dependencies flow toward stable, abstract components | Stable components depend on volatile ones |
-| **Fan-out** | Module depends on a small number of others | Module imports from 10+ other modules |
-| **Circular dependencies** | No circular imports between modules | Module A imports from Module B which imports from Module A |
-| **Dependency on abstractions** | Depends on interfaces, contracts, service functions | Depends on concrete implementations, internal data models |
+| Signal                         | Good                                                 | Poor                                                       |
+| ------------------------------ | ---------------------------------------------------- | ---------------------------------------------------------- |
+| **Dependency direction**       | Dependencies flow toward stable, abstract components | Stable components depend on volatile ones                  |
+| **Fan-out**                    | Module depends on a small number of others           | Module imports from 10+ other modules                      |
+| **Circular dependencies**      | No circular imports between modules                  | Module A imports from Module B which imports from Module A |
+| **Dependency on abstractions** | Depends on interfaces, contracts, service functions  | Depends on concrete implementations, internal data models  |
 
 **Investigation steps:**
+
 1. **Count distinct module dependencies (fan-out)** — how many other modules does the target import from? High fan-out means many reasons to change.
 2. **Check for circular dependencies** — find which modules import from the target, then check whether the target also imports from those same modules. Circular dependencies make it impossible to change either side independently.
 3. **Check dependency direction** — does this module depend on more-volatile or more-stable components? Use git history as a proxy for volatility. Depending on highly volatile modules is expensive.
@@ -158,6 +177,7 @@ Accept the target as a skill argument. Valid scopes:
 - **Specific file or class**: for a focused review
 
 If no target is provided, ask the user:
+
 > "Which part of the codebase should I assess? (e.g. a package, module, domain area, or specific file)"
 
 ### Step 1 — Reconnaissance
@@ -198,55 +218,67 @@ Output the following structured report:
 ## Design Principles Assessment: <target>
 
 ### Scope
+
 <Description of what was assessed, volatility, change frequency>
 
 ### Overview
-| Principle | Summary |
-|-----------|---------|
-| Modularity | <one-line summary of what's working and what isn't> |
-| Cohesion | <one-line summary> |
-| Separation of Concerns | <one-line summary> |
-| Information Hiding | <one-line summary> |
-| Coupling Management | <one-line summary> |
+
+| Principle              | Summary                                             |
+| ---------------------- | --------------------------------------------------- |
+| Modularity             | <one-line summary of what's working and what isn't> |
+| Cohesion               | <one-line summary>                                  |
+| Separation of Concerns | <one-line summary>                                  |
+| Information Hiding     | <one-line summary>                                  |
+| Coupling Management    | <one-line summary>                                  |
 
 ### Detailed Findings
 
 #### 1. Modularity
 
 **Evidence:**
+
 - <finding with file:line reference>
 - <finding with file:line reference>
 
 **What's working well:**
+
 - ...
 
 **What's working against the principle:**
+
 - ...
 
 #### 2. Cohesion
+
 ...
 
 #### 3. Separation of Concerns
+
 ...
 
 #### 4. Information Hiding & Abstraction
+
 ...
 
 #### 5. Coupling Management
+
 ...
 
 ### Cross-Cutting Findings
+
 <Findings that span multiple principles, grouped to avoid repetition>
 
 ### Recommendations
+
 <Prioritised list of actions, ordered by impact on ease of change>
 
-| Priority | Recommendation | Principles Improved | Effort |
-|----------|---------------|--------------------| -------|
-| 1 | ... | Modularity, Cohesion | Low/Medium/High |
-| 2 | ... | Information Hiding, SoC | ... |
+| Priority | Recommendation | Principles Improved     | Effort          |
+| -------- | -------------- | ----------------------- | --------------- |
+| 1        | ...            | Modularity, Cohesion    | Low/Medium/High |
+| 2        | ...            | Information Hiding, SoC | ...             |
 
 ### Summary
+
 Answer the central question: **how easy is this code to change?** For each principle, briefly describe where it supports ease of change and where it creates friction. Highlight the single most impactful improvement — the one change that would make all future changes cheaper.
 ```
 
