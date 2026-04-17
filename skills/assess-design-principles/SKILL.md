@@ -250,24 +250,31 @@ Before diving into each principle, gather the basics:
 
 ### Step 2 — Assess Each Principle
 
-Run through each of the five design principles using the investigation steps above. For each principle, collect:
+Run through each of the five design principles using the investigation steps provided in each principle section. For each principle:
 
-- **Concrete evidence** (file names, import patterns, code snippets)
-- **What's working well** — where the principle is being applied effectively
-- **What's working against the principle** — where it's being violated and what friction that causes
-- **Specific findings** with file:line references where possible
+1. **Evaluate the characteristics** — does the module exhibit the positive characteristics described? Which are present, which are absent?
+2. **Assess the signals** — examine each signal in the principle's table. What evidence do you find for "good" vs "poor" on each signal? Signals often reveal tradeoffs, not absolutes.
+3. **Run investigation steps** — follow the specific investigation steps for that principle. Collect concrete evidence: file names, import patterns, code snippets, git history patterns, test structures.
+4. **Document findings** — for each investigation step, record:
+   - **Concrete evidence** (file names, line references, specific imports or patterns)
+   - **What's working well** — where the principle is being applied effectively
+   - **What's working against the principle** — where it's being violated and what friction that causes
+   - **File:line references** where possible
 
-Avoid reducing each principle to a single score or colour. Farley's principles are qualitative — a module can be strong on one aspect of modularity (clean internal layering) and weak on another (high fan-out). Capture that nuance.
+Avoid reducing each principle to a single score or colour. Farley's principles are qualitative — a module can be strong on one aspect (e.g., clean internal layering in modularity) and weak on another (e.g., high fan-out). Capture that nuance. A principle violation matters only if it makes change harder, more expensive, or more error-prone.
 
 ### Step 3 — Cross-Cutting Analysis
 
 Some findings span multiple principles. Look for patterns:
 
-- **God files** violate modularity, cohesion, and separation of concerns simultaneously
-- **Missing service layer** violates information hiding, separation of concerns, and coupling management
-- **High fan-out with intrusive imports** violates modularity, coupling management, and information hiding
+- **God files** violate modularity, cohesion, and separation of concerns simultaneously — high fan-out and poor information hiding follow naturally.
+- **Missing or leaky service layer** violates information hiding, separation of concerns, and hampers coupling management — internal details are exposed, forcing intrusive coupling.
+- **High fan-out with intrusive imports** violates modularity, coupling management, and information hiding — dependencies are on implementation details rather than abstractions.
+- **Tight cross-service coupling** (shared utilities, shared data models) violates separation of concerns and coupling management — deployment independence is impossible.
+- **Unrelated code bundled together** violates cohesion and modularity — changes for different reasons land in the same module, increasing the cost and risk of each change.
+- **Test brittleness and complex setup** signals problems in coupling, modularity, and separation of concerns — when dependencies are tangled, tests become fragile.
 
-Group related findings together to avoid repetitive recommendations.
+Group related findings together to avoid repetitive recommendations. A single architectural issue often maps to multiple principle violations.
 
 ### Step 4 — Produce the Assessment Report
 
@@ -348,13 +355,14 @@ Answer the central question: **how easy is this code to change?** For each princ
 Before completing the assessment:
 
 - [ ] Target scope identified and confirmed with user
-- [ ] Module structure and size measured
-- [ ] Change frequency and volatility established
-- [ ] Modularity assessed (boundaries, testability, size, independence)
-- [ ] Cohesion assessed (responsibilities, naming, god files, change correlation)
-- [ ] Separation of concerns assessed (layer discipline, concern bleeding)
-- [ ] Information hiding assessed (service layers, public API, abstraction quality)
-- [ ] Coupling management assessed (fan-out, circularity, dependency direction)
-- [ ] Cross-cutting findings identified
-- [ ] Recommendations prioritised by impact on ease of change
-- [ ] Qualitative summary produced (no numerical scores)
+- [ ] Module structure and size measured (file count, line count, directory layout)
+- [ ] Change frequency and volatility established (git history, recent activity)
+- [ ] **Modularity** assessed: size, reusability, service layer, information hiding, test isolation, fan-in, fan-out, circular dependencies
+- [ ] **Cohesion** assessed: functional relatedness, domain language consistency, god files, test alignment, change correlation via git history
+- [ ] **Separation of Concerns** assessed: responsibility focus, business logic location, infrastructure dependencies, dependency injection, ports & adapters, test independence
+- [ ] **Information Hiding & Abstraction** assessed: service layer existence, private internals, API stability, abstraction level, information leaks (technical details), data encapsulation
+- [ ] **Coupling Management** assessed: fan-out count and stability, circular dependencies, dependency direction and volatility, abstraction in dependencies, cross-service coupling, test isolation
+- [ ] Cross-cutting patterns identified (god files, missing service layers, intrusive imports, shared utilities across boundaries, fragmented tests)
+- [ ] Recommendations prioritised by impact on ease of change (highest-impact improvements first)
+- [ ] Qualitative summary produced: for each principle, describe what supports ease of change and where friction exists; identify the single most impactful improvement
+- [ ] No numerical scores assigned; findings expressed qualitatively with clear evidence
