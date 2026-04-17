@@ -227,7 +227,18 @@ A system with well-managed coupling exhibits these characteristics:
 
 ## Workflow
 
-### Step 0 — Determine the Target Scope
+Copy this checklist and check off items as you complete them:
+
+```
+Task Progress:
+- [ ] Step 1: Determine the Target Scope
+- [ ] Step 2: Reconnaissance
+- [ ] Step 3: Assess Each Principle
+- [ ] Step 4: Cross-Cutting Analysis
+- [ ] Step 5: Produce the Assessment Report
+```
+
+### Step 1 — Determine the Target Scope
 
 Accept the target as a skill argument. Valid scopes:
 
@@ -239,7 +250,7 @@ If no target is provided, ask the user:
 
 > "Which part of the codebase should I assess? (e.g. a package, module, domain area, or specific file)"
 
-### Step 1 — Reconnaissance
+### Step 2 — Reconnaissance
 
 Before diving into each principle, gather the basics:
 
@@ -248,7 +259,7 @@ Before diving into each principle, gather the basics:
 3. **Change frequency**: recent git activity
 4. **Volatility**: is this an area under active development, or relatively stable?
 
-### Step 2 — Assess Each Principle
+### Step 3 — Assess Each Principle
 
 Run through each of the five design principles using the investigation steps provided in each principle section. For each principle:
 
@@ -263,7 +274,7 @@ Run through each of the five design principles using the investigation steps pro
 
 Avoid reducing each principle to a single score or colour. Farley's principles are qualitative — a module can be strong on one aspect (e.g., clean internal layering in modularity) and weak on another (e.g., high fan-out). Capture that nuance. A principle violation matters only if it makes change harder, more expensive, or more error-prone.
 
-### Step 3 — Cross-Cutting Analysis
+### Step 4 — Cross-Cutting Analysis
 
 Some findings span multiple principles. Look for patterns:
 
@@ -276,7 +287,7 @@ Some findings span multiple principles. Look for patterns:
 
 Group related findings together to avoid repetitive recommendations. A single architectural issue often maps to multiple principle violations.
 
-### Step 4 — Produce the Assessment Report
+### Step 5 — Produce the Assessment Report
 
 Output the following structured report:
 
