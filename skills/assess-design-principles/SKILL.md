@@ -176,20 +176,52 @@ A system with good information hiding and abstraction exhibits these characteris
 
 ### 5. Managing Coupling — _When something changes, how far does the ripple travel?_
 
-Coupling determines the blast radius of change. The goal is not zero coupling but _managed_ coupling — keeping the cost of change proportional to the value of the connection, so that a change in one module doesn't cascade unpredictably through others.
+Coupling is "the degree of interdependence between software modules; a measure of how closely connected two routines or modules are; the strength of the relationship between modules." Coupling determines the blast radius of change. The goal is not zero coupling but _managed_ coupling — keeping the cost of change proportional to the value of the connection, so that a change in one module doesn't cascade unpredictably through others.
 
-| Signal                         | Good                                                 | Poor                                                       |
-| ------------------------------ | ---------------------------------------------------- | ---------------------------------------------------------- |
-| **Dependency direction**       | Dependencies flow toward stable, abstract components | Stable components depend on volatile ones                  |
-| **Fan-out**                    | Module depends on a small number of others           | Module imports from 10+ other modules                      |
-| **Circular dependencies**      | No circular imports between modules                  | Module A imports from Module B which imports from Module A |
-| **Dependency on abstractions** | Depends on interfaces, contracts, service functions  | Depends on concrete implementations, internal data models  |
+Farley emphasizes a critical insight: **Tight coupling is not necessarily bad and loose coupling is not necessarily good. We must understand the tradeoffs when determining degrees of coupling**. The real goal is balance. Unmanaged tight coupling leads to "big ball of mud" software where changes ripple chaotically. But perfectly decoupled components cannot communicate — zero coupling is impossible and undesirable. The question is not "eliminate coupling" but "make coupling intentional and measurable."
+
+Services should be very loosely coupled to one another so that one can change without breaking others. This often means drawing seams of abstraction between services and promoting information hiding. However, within a deployment unit (a module or service), some coupling is expected and necessary. Between independently deployed services, tight coupling becomes expensive.
+
+An important tradeoff emerges from the DRY (Don't Repeat Yourself) principle: **DRY should guide code within a deployment pipeline, but should be actively avoided between pipelines**. Sharing code across service boundaries increases coupling, and this cost often exceeds the cost of duplication. Decoupling may mean more code — and that is not necessarily a bad thing. Code is a means of communicating between human beings, not computers.
+
+A system with well-managed coupling exhibits these characteristics:
+
+**Intentional dependencies**: Dependencies are explicit and purposeful. The cost of coupling is understood and accepted — you know why a dependency exists and what it costs to change either side.
+
+**Limited fan-out**: Each module depends on a small, stable set of others. High fan-out creates many reasons to change and makes the module fragile and expensive to evolve.
+
+**No circular dependencies**: Modules can be understood, tested, and deployed independently because they have no need to import from modules that import from them.
+
+**Stable dependency direction**: Dependencies flow toward stable, abstract components. Volatile modules depend on stable ones, not the reverse. This prevents the high cost of change in one area cascading to many who depend on it.
+
+**Abstraction as coupling management**: Dependencies are on interfaces, contracts, and service functions — not on concrete implementations, internal data models, or details hidden behind abstraction boundaries. This allows internals to change without forcing consumers to change.
+
+**Testability as a signal**: If code is hard to test, it is usually as a result of unfortunate coupling. Tightly coupled code requires complex setup and many fixtures. Loose coupling makes testing local and fast.
+
+**Informed tradeoffs**: The team understands which couplings are intentional (acceptable costs for communication between modules) and which are accidental (expensive constraints that should be removed). The decision to couple is made explicitly, not by default.
+
+| Signal                         | Good                                                                           | Poor                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| **Dependency direction**       | Dependencies flow toward stable, abstract components; volatile modules lean in | Stable components depend on volatile ones; high-volatility areas are widely used |
+| **Fan-out**                    | Module depends on 3-5 other modules; reasons to change are limited and stable  | Module imports from 10+ other modules; many reasons to change; fragile           |
+| **Circular dependencies**      | No circular imports between modules; each can be understood independently      | Module A imports from Module B which imports from Module A; locked together      |
+| **Dependency on abstractions** | Depends on interfaces, contracts, service functions; hides implementation      | Depends on concrete implementations, internal data models, framework details     |
+| **Cross-service coupling**     | Services share minimal dependencies; loosely coupled across boundaries         | Services tightly coupled through shared utilities or data models                 |
+| **Test isolation**             | Tests run in isolation without importing heavily from other modules for setup  | Tests require complex multi-module setup; hard to test one module independently  |
 
 **Investigation steps:**
 
-1. **Count distinct module dependencies (fan-out)** — how many other modules does the target import from? High fan-out means many reasons to change.
-2. **Check for circular dependencies** — find which modules import from the target, then check whether the target also imports from those same modules. Circular dependencies make it impossible to change either side independently.
-3. **Check dependency direction** — does this module depend on more-volatile or more-stable components? Use git history as a proxy for volatility. Depending on highly volatile modules is expensive.
+1. **Count distinct module dependencies (fan-out)** — how many other modules does the target import from? List them. High fan-out (7+) means many reasons to change and tight coupling to multiple parts of the system.
+
+2. **Check for circular dependencies** — find which modules import from the target, then check whether the target also imports from any of those same modules. Circular dependencies make independent change and deployment impossible.
+
+3. **Check dependency direction** — does this module depend on more-volatile or more-stable components? Use git history as a proxy for volatility (frequency of changes, number of contributors, recent commits). Depending on highly volatile modules is expensive.
+
+4. **Assess abstraction in dependencies** — when the target imports from another module, does it depend on a clean service interface, or on internal implementation details, data models, or framework artifacts? Intrusive dependencies indicate poor abstraction.
+
+5. **Evaluate cross-service coupling** — for independently deployed services, check whether they share code, utilities, or data models. Coupling across deployment boundaries increases the cost of independent change and deployment.
+
+6. **Test testability** — can you test this module in isolation, or do tests require complex setup importing from many other modules? Difficulty testing in isolation indicates problematic coupling.
 
 ---
 
