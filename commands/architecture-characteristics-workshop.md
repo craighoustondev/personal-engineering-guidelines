@@ -1,3 +1,7 @@
+---
+description: Guide a workshop to prioritise architecture characteristics for a system area, assess risks, and produce an ADR, agent rule, and machine-checkable contract
+---
+
 # Architecture Characteristics Workshop
 
 Guide the user through an architecture characteristics workshop. The workshop helps identify and prioritise the most important architecture characteristics for a system area, assess risks, and produce actionable documentation.
