@@ -37,6 +37,7 @@ Applies at two scales:
 **Tests** — assert on observable outcomes (return values, state, calls to real boundaries), never on internal steps or private state. A test should survive a refactor that doesn't change behaviour, and should fail if the behaviour does.
 - Structure tests as Arrange-Act-Assert.
 - Mock only at true boundaries (I/O, external systems, time) — not internal collaborators you own.
+- Name test functions `test_<expected_outcome>_when_<specific_conditions>` — the outcome leads (what the assertion proves), the condition trails (what produces it). E.g. `test_returns_404_when_employee_id_is_unknown`, not `test_unknown_employee_id_returns_404` or `test_get_employee_404`.
 
 ## Self-check before calling a task done
 
@@ -44,4 +45,5 @@ Applies at two scales:
 - [ ] Is each function/file/class still a single, nameable responsibility?
 - [ ] Would this diff review as one coherent change, or does it bundle unrelated work?
 - [ ] Do names describe behaviour, not implementation or framework details?
+- [ ] Do test names follow `test_<expected_outcome>_when_<specific_conditions>`?
 - [ ] Would these tests still pass after a pure refactor, and fail if the behaviour broke?
