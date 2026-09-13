@@ -37,7 +37,10 @@ Applies at two scales:
 **Tests** — assert on observable outcomes (return values, state, calls to real boundaries), never on internal steps or private state. A test should survive a refactor that doesn't change behaviour, and should fail if the behaviour does.
 - Structure tests as Arrange-Act-Assert.
 - Mock only at true boundaries (I/O, external systems, time) — not internal collaborators you own.
-- Name test functions `test_<action>_<expected_outcome>_when_<specific_conditions>` — the action names what's under test (the function/endpoint/unit), the outcome leads what follows (what the assertion proves), the condition trails (what produces it). E.g. `test_get_employee_returns_404_when_employee_id_is_unknown`, not `test_returns_404_when_employee_id_is_unknown` (drops the action, ambiguous against other tests in the same file) or `test_unknown_employee_id_returns_404` (outcome buried at the end).
+- A test name carries three things: the **action** (what's under test — the function, endpoint, component or unit), the **expected outcome** (what the assertion proves), and the **specific condition** (what produces it). All three present is the rule; the format they arrive in is not. A name that carries all three in a shape the file already uses consistently is fine.
+- The preferred shape is `test_<action>_<expected_outcome>_when_<specific_conditions>` — e.g. `test_get_employee_returns_404_when_employee_id_is_unknown`. Leading with the outcome puts what the test proves in front of the reader, so reach for it first where the file has no established shape of its own.
+- What fails is a missing part, not an unfamiliar order. `test_returns_404_when_employee_id_is_unknown` drops the action and is ambiguous against every other test in the file that also returns 404; `test_unknown_employee_id_returns_404` drops it too. `test_get_employee_returns_404_for_an_unknown_employee_id` does not — same three parts, different joinery, and nothing to fix.
+- In a nested suite (`describe`/`it`, `context`/`it`, `class TestX`), the name is the whole path from the outermost block to the leaf, and that path carries the three parts between it. The action may live in an enclosing block rather than the leaf: `describe('AllGravyConnection') > it('sends no revoke request when Cancel is clicked')` meets the convention rather than excusing itself from it. What the action may not do is disappear — where every enclosing block names a scenario instead of the unit (`describe('disconnecting') > describe('when the request fails')`), the leaf is as ambiguous as a flat name with the action dropped, and has to name the unit itself.
 
 ## Self-check before calling a task done
 
@@ -45,5 +48,5 @@ Applies at two scales:
 - [ ] Is each function/file/class still a single, nameable responsibility?
 - [ ] Would this diff review as one coherent change, or does it bundle unrelated work?
 - [ ] Do names describe behaviour, not implementation or framework details?
-- [ ] Do test names follow `test_<action>_<expected_outcome>_when_<specific_conditions>`?
+- [ ] Do test names carry action, expected outcome and specific condition — in the name itself, or across the enclosing blocks that lead to it?
 - [ ] Would these tests still pass after a pure refactor, and fail if the behaviour broke?
