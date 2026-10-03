@@ -145,17 +145,46 @@ Then fetch the diff with `gh pr diff <url>` and report on the tests it contains 
 ```
 
 Each `<verdict>` is exactly `Follows` or `Departs`. For `Departs`, `<evidence>` names the test or the
-untested behaviour, so the reader can go and look at it — never a general observation that leaves them
-hunting. For `Follows`, `<evidence>` says briefly what you checked.
+untested behaviour **and where it is**, as `path:line`, so the reader can go and look at it — never a
+general observation that leaves them hunting. For `Follows`, `<evidence>` says briefly what you checked.
+
+### Where a departure is
+
+Every `Departs` carries a location, because the comment it earns is posted against a line on GitHub.
+A reader holding `path:line` opens it in one move; a reader holding a test name goes hunting for it,
+which is the thing the evidence rule exists to prevent.
+
+`<line>` is the line number in the **new version of the file** — what you would see opening the file
+after this change — not a position in the patch text and not an offset within a hunk. `gh pr diff`
+gives you a unified diff, so count from the `@@` hunk header's new-file start. A location nine lines
+out puts the author's attention on unrelated code, and costs them more than saying nothing would have.
+
+An absence has no line of its own. **Coverage** departs because a behaviour has no test, and there is
+no test to point at — so point at the behaviour instead: the line in the non-test change that
+introduces it. That is where the comment belongs anyway, since it is the code the author would be
+writing the test against. The other three dimensions always have a test in front of them, so they
+always name its line.
 
 The four dimensions, each judged against the matching rule in `dev-workflow`:
 
 - **Coverage** — was every new behaviour in the diff introduced by a test that would fail without it?
   Read the non-test changes first and list the behaviours they introduce, then find each one's test. A
   behaviour with no test that would catch its absence is the finding worth leading on.
+
+  A **behaviour** is something observable from outside the unit: a request made or not made and what
+  it carries, a state the user can see, a value written where something else reads it. A prop passed
+  or a flag set is not one on its own — it becomes one where it produces an observable that no other
+  test in the diff already covers. Hold that grain, because it is what makes this verdict the same on
+  two readings of the same diff: an outgoing request's headers are a behaviour, since the request is
+  observable and its contents are part of it; an `isLoading` prop is not, where the disabled button it
+  drives is already covered.
 - **Behaviour focus** — do the tests assert what the skill calls observable outcomes, rather than
-  internal steps or private state?
-- **Naming** — does each test name follow the convention the skill sets out, in the order it sets out?
+  internal steps or private state? A test id is an internal handle and asserting one is a departure,
+  unless it is the only way to reach something the user genuinely perceives and the test names which
+  perceivable thing it stands for.
+- **Naming** — does each test name carry the parts the skill requires? The shape they come in is the
+  skill's preference, not its rule, so a name carrying all of them is not a departure for arriving in
+  an order or a joinery you would not have picked.
 - **Boundaries** — is mocking confined to the true boundaries the skill names?
 
 Judge only against what the skill says. If you find yourself reaching for a rule it does not contain,
@@ -182,10 +211,21 @@ Your final message is the report the reader keeps, so it must carry the whole th
 `## PR description` section, then the `## Tests` section, then the `## Review comments` section that
 closes it. Everything you emitted along the way was working; this is the deliverable.
 
+**It begins with the `## PR description` heading, and nothing precedes it.** Not a sentence saying
+what you have gathered, not a note on what you are about to do, not a word. A final message that
+opens mid-stride is one you are writing as the next turn of a conversation, and the section that goes
+missing is always the first — you have already said the description verdicts once, so continuing from
+where you left off skips them and hands the reader a report with its opening third gone.
+
 Repeat the description verdicts exactly as you first committed to them. If the diff has changed your
 mind about one, that is precisely the judgement the phase order exists to keep out of it -- leave the
 verdict alone. You may note the disagreement in a sentence beneath the `## Tests` section, where it
 does not contaminate the verdict.
+
+That sentence is the only note the report carries. Anything else you noticed — a defect in the change,
+a doubt about the approach, something you would raise if this were a wider review — is outside what
+you were asked to judge, and a paragraph saying you noticed it but are not reporting it is reporting
+it. It spends the reader's attention and leaves them nothing to act on. Leave it out.
 
 ## Closing grade and the comments
 
@@ -215,13 +255,20 @@ drafted in Phase 1, which asks for all of them at once, so carry that down word 
 writing a second one.
 
 Give each comment a short bold label naming the dimension it came from and the thing it is about, so
-two comments from the same dimension are told apart, and put each inside its own fenced code block with
-nothing else inside that fence, so any one of them can be lifted straight into GitHub. Anything
-addressed to the reader rather than to the author belongs outside the fences.
+two comments from the same dimension are told apart, and end the label with the `path:line` you gave as
+that finding's evidence, so the reader knows where to post it without going back up the report. Put
+each inside its own fenced code block with nothing else inside that fence, so any one of them can be
+lifted straight into GitHub. Anything addressed to the reader rather than to the author belongs outside
+the fences.
+
+The description comment is the exception and carries no location: it is posted on the pull request
+itself rather than against a line of the diff, and there is no line in the change that its gap is at.
 
 A comment for a departing dimension names the test or the untested behaviour from the evidence you
 already gave, so the author can go and look at it, and states the expectation it falls short of in
-full. **What a comment may say** governs these as much as the description's.
+full. The location belongs in the label, not inside the fence — the author is already reading the
+comment on the line it was posted against, and being told where they are helps nobody.
+**What a comment may say** governs these as much as the description's.
 
 Splitting them is not licence to find more. The findings are the ones already named in the evidence
 above; you are separating them, not multiplying them.
@@ -241,9 +288,9 @@ The shape, on a report whose description left a gap and whose coverage named two
 
 **Description:** <a fenced block holding the comment>
 
-**Coverage — the unsupported-topic guard:** <a fenced block holding the comment>
+**Coverage — the unsupported-topic guard — `app/webhooks/topics.py:47`:** <a fenced block holding the comment>
 
-**Coverage — the missing `shop_domain` guard:** <a fenced block holding the comment>
+**Coverage — the missing `shop_domain` guard — `app/webhooks/verify.py:12`:** <a fenced block holding the comment>
 ```
 
 ## Report only
