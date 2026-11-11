@@ -135,11 +135,12 @@ not repeated here. This agent decides what to report on and in what shape; the s
 looks like. Every criterion you apply comes from there.
 
 Then fetch the diff with `gh pr diff <url>` and report on the tests it contains under its own heading:
-`## Tests`. Give a verdict on each of four dimensions, one line per dimension, in this order:
+`## Tests`. Give a verdict on each of five dimensions, one line per dimension, in this order:
 
 ```
 - **Coverage:** <verdict> — <evidence>
 - **Behaviour focus:** <verdict> — <evidence>
+- **Grouping:** <verdict> — <evidence>
 - **Naming:** <verdict> — <evidence>
 - **Boundaries:** <verdict> — <evidence>
 ```
@@ -162,10 +163,10 @@ out puts the author's attention on unrelated code, and costs them more than sayi
 An absence has no line of its own. **Coverage** departs because a behaviour has no test, and there is
 no test to point at — so point at the behaviour instead: the line in the non-test change that
 introduces it. That is where the comment belongs anyway, since it is the code the author would be
-writing the test against. The other three dimensions always have a test in front of them, so they
+writing the test against. The other four dimensions always have a test in front of them, so they
 always name its line.
 
-The four dimensions, each judged against the matching rule in `dev-workflow`:
+The five dimensions, each judged against the matching rule in `dev-workflow`:
 
 - **Coverage** — was every new behaviour in the diff introduced by a test that would fail without it?
   Read the non-test changes first and list the behaviours they introduce, then find each one's test. A
@@ -182,6 +183,13 @@ The four dimensions, each judged against the matching rule in `dev-workflow`:
   internal steps or private state? A test id is an internal handle and asserting one is a departure,
   unless it is the only way to reach something the user genuinely perceives and the test names which
   perceivable thing it stands for.
+- **Grouping** — is each test one behaviour, as the skill defines it? It departs two ways. Split too
+  fine: two or more tests repeat the same Arrange and Act, under the same condition, and differ only in
+  which facet of one outcome they assert — point at the first of them and name the others. Bundled too
+  coarse: one test asserts outcomes its name can only cover by joining them with "and", or exercises
+  more than one condition — point at that test. Hold that grain: tests that share setup but differ in
+  condition or action are separate behaviours, and a split you would merely have drawn differently is
+  not a departure.
 - **Naming** — does each test name carry the parts the skill requires? The shape they come in is the
   skill's preference, not its rule, so a name carrying all of them is not a departure for arriving in
   an order or a joinery you would not have picked.
@@ -198,8 +206,8 @@ you may not word it that way. A verdict that quotes examples in support of a uni
 wearing a universal's clothes, and it will be wrong on the test you skipped.
 
 Where the change alters no behaviour at all — documentation, configuration, or comments only — say so
-under **Coverage** and mark all four `Follows`. Where it changes behaviour and adds no tests, mark
-**Coverage** `Departs` and name the untested behaviours; the remaining three dimensions have nothing to
+under **Coverage** and mark all five `Follows`. Where it changes behaviour and adds no tests, mark
+**Coverage** `Departs` and name the untested behaviours; the remaining four dimensions have nothing to
 judge, so mark them `Departs` citing the same absence.
 
 Report the tests phase as verdicts only. A dimension that `Departs` earns a comment, but not here --
@@ -241,7 +249,7 @@ them and the thing they came for.
 rule is mechanical, so apply it mechanically:
 
 - `Necessary` -- any description element is `Not stated`, or any test dimension `Departs`.
-- `Unnecessary` -- all three elements are `Stated` and all four dimensions `Follows`.
+- `Unnecessary` -- all three elements are `Stated` and all five dimensions `Follows`.
 
 Follow the grade with its reasons on the same line, naming every element and dimension that drove it,
 so the reader can see the grade is only the arithmetic of the verdicts above.

@@ -36,6 +36,8 @@ Applies at two scales:
 
 **Tests** — assert on observable outcomes (return values, state, calls to real boundaries), never on internal steps or private state. A test should survive a refactor that doesn't change behaviour, and should fail if the behaviour does.
 - Structure tests as Arrange-Act-Assert.
+- One test per behaviour, not one test per assertion. Where several checks share the same Arrange and Act and are facets of one outcome (the status and body of a single response, or the fields of the record it wrote), keep them as several asserts in one test. Splitting them into near-identical tests repeats the setup, slows the suite, and buys little: when the behaviour breaks, they all fail together anyway.
+- Split when the asserts stop describing one behaviour. The test name is the check: if its expected outcome can't name what the asserts prove without joining unrelated outcomes with "and", or a failure wouldn't tell you which behaviour broke, it's more than one test. A different condition is always a different test.
 - Mock only at true boundaries (I/O, external systems, time) — not internal collaborators you own.
 - A test name carries three things: the **action** (what's under test — the function, endpoint, component or unit), the **expected outcome** (what the assertion proves), and the **specific condition** (what produces it). All three present is the rule; the format they arrive in is not. A name that carries all three in a shape the file already uses consistently is fine.
 - The preferred shape is `test_<action>_<expected_outcome>_when_<specific_conditions>` — e.g. `test_get_employee_returns_404_when_employee_id_is_unknown`. Leading with the outcome puts what the test proves in front of the reader, so reach for it first where the file has no established shape of its own.
@@ -50,3 +52,4 @@ Applies at two scales:
 - [ ] Do names describe behaviour, not implementation or framework details?
 - [ ] Do test names carry action, expected outcome and specific condition — in the name itself, or across the enclosing blocks that lead to it?
 - [ ] Would these tests still pass after a pure refactor, and fail if the behaviour broke?
+- [ ] Is each test one behaviour, with no near-identical tests that repeat the same Arrange and Act to assert different facets of the same outcome?

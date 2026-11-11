@@ -71,15 +71,19 @@ don't just point the user at it.
 - The confirmed GIVEN is the Arrange step and the confirmed WHEN is the Act step for every test written
   in this phase.
 - Break the confirmed THEN into its individual, independently-checkable assertions before writing any
-  test — this list is the worklist for the rest of this run. Each assertion becomes the Assert step of
-  one test.
+  test — this list is the worklist for the rest of this run. Then group them by behaviour, following
+  `dev-workflow`'s one-test-per-behaviour rule. Because every test in this run shares the same Arrange
+  and Act, most THENs come out as one test, or one per behaviour where the THEN spans more than one
+  (e.g. the response returned versus a notification sent to another system). Show the grouping to the
+  user before writing tests.
 - For each assertion, in order:
-  1. **Red** — write one small test asserting only that outcome, using GIVEN as Arrange and WHEN as
-     Act. Run it and confirm it fails for the right reason (not a setup/import error).
+  1. **Red** — add the assertion to its behaviour's test, creating the test (GIVEN as Arrange, WHEN as
+     Act) when it's the first assertion for that behaviour. Run it and confirm it fails on this new
+     assertion, for the right reason (not a setup/import error).
   2. **Green** — write the simplest code that makes it pass. Don't implement behaviour for later
      assertions yet, even if it's obvious what they'll need.
   3. **Refactor** — with the test green, clean up structure and naming without changing behaviour.
-     Rerun the tests.
+     Rerun the tests. If the test name no longer covers everything the test now asserts, rename it.
   4. Move to the next assertion only once this one is green and refactored.
 - Apply the rest of `dev-workflow` throughout: keep the whole change scoped to this one scenario, name
   tests `test_<action>_<expected_outcome>_when_<specific_conditions>`, assert on observable outcomes
@@ -90,7 +94,7 @@ don't just point the user at it.
 
 ### 6. Done
 
-Report: which assertions now have passing tests, and confirm the scenario from this run is fully
+Report: which tests were written, which assertions each one covers, and confirm the scenario from this run is fully
 implemented. If earlier steps noted other scenarios for this behaviour as follow-ups — a scenario named
 but not picked in step 1, or a second action split off in step 2 — remind the user those are separate
 `/implement-behaviour` runs, not more work for this one.
